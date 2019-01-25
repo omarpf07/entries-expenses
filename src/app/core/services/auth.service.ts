@@ -16,15 +16,19 @@ import Swal from 'sweetalert2';
 export class AuthService {
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
+  private user: User;
   constructor(private afAuth: AngularFireAuth, private router: Router, private aFDB: AngularFirestore, private store: Store<AppState>) { }
 
   initAuthListener() {
     this.afAuth.authState.subscribe(fbUser => {
       if (fbUser) {
-        this.aFDB.doc(`${fbUser.uid}/user`).valueChanges().pipe(takeUntil(this.destroy$)).subscribe((user: any) => {
-          this.store.dispatch(new SetUserAction(new User(user.name, user.uid, user.email)));
+        this.aFDB.doc(`${fbUser.uid}/user`).valueChanges().pipe(takeUntil(this.destroy$)).subscribe((resp: any) => {
+          const user = new User(resp.name, resp.uid, resp.email);
+          this.user = user;
+          this.store.dispatch(new SetUserAction(user));
         });
       } else {
+        this.user = null;
         this.destroy$.next(true);
       }
     });
@@ -77,4 +81,7 @@ export class AuthService {
     }));
   }
 
+  getUser() {
+    return { ... this.user };
+  }
 }
