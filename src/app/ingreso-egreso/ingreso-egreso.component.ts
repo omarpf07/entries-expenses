@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Location } from '@angular/common';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Movements } from '../core/models/movements.models';
 import { MovementsService } from '../core/services/movements.service';
@@ -20,7 +21,8 @@ export class IngresoEgresoComponent implements OnInit, OnDestroy {
   public type = 'entry';
   public destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private fb: FormBuilder, private movementsService: MovementsService, private store: Store<AppState>) {
+  constructor(private fb: FormBuilder, private movementsService: MovementsService, private store: Store<AppState>,
+    private _location: Location) {
     this.store.select('ui').pipe(takeUntil(this.destroy$)).subscribe(ui => this.loading = ui.isLoading);
     this.movementForm = this.fb.group({
       description: ['', [Validators.required]],
@@ -45,5 +47,9 @@ export class IngresoEgresoComponent implements OnInit, OnDestroy {
         this.movementForm.reset({ amount: 1 });
       }).catch(() => this.store.dispatch(new DeactivateLoadingAction()));
     this.movementForm.enable();
+  }
+
+  return() {
+    this._location.back();
   }
 }

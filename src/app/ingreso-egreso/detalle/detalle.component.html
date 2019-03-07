@@ -2,9 +2,15 @@
   <div class="col-12">
     <div class="card">
       <div class="card-body">
-        <h4 class="card-title">Movements Details</h4>
-
-        <table class="table">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="card-title mb-0">Movements Details</h4>
+          </div>
+          <div class="col-md-6 d-flex justify-content-end">
+            <button type="button" class="btn btn-primary" [routerLink]="['/movements']"><i class="fas fa-plus"></i> New</button>
+          </div>
+        </div>
+        <table class="table" *ngIf="loaded; else loadingScreen">
           <thead>
             <tr>
               <th>Description</th>
@@ -15,15 +21,28 @@
           </thead>
 
           <tbody>
-            <tr>
-              <td>Description</td>
-              <td>Amount</td>
-              <td>Type</td>
-              <td>acciones</td>
+            <tr *ngFor="let item of items | orderMovements">
+              <td>{{item.description}}</td>
+              <td>{{item.amount | currency }}</td>
+              <td class="text-capitalize">
+                <span [ngClass]="{'text-success': item.type === 'entry', 'text-danger': item.type === 'expense' }">
+                  {{item.type}}
+                </span>
+              </td>
+              <td>
+                <button type="button" class="btn btn-danger" (click)="deleteItem(item.uid)"><i class="far fa-trash-alt mx-auto"></i></button>
+              </td>
             </tr>
           </tbody>
 
         </table>
+
+        <ng-template #loadingScreen>
+          <div class="d-flex justify-content-center">
+            <i class="fas fa-spinner fa-spin fa-5x" [style.color]="'#15CCD3'"></i>
+          </div>
+        </ng-template>
+
 
 
       </div>
